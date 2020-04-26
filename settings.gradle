@@ -1,0 +1,3 @@
+rootProject.name='RxTask'
+include ':app'
+include ':lib_rxtask'
