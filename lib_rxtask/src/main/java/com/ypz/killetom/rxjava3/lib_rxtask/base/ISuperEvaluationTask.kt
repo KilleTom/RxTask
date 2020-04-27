@@ -2,7 +2,7 @@ package com.ypz.killetom.rxjava3.lib_rxtask.base
 
 import com.ypz.killetom.rxjava3.lib_rxtask.exception.RxTaskCancelException
 
-abstract class ISuperEvaluation<RESULT> : IEvaluation<RESULT>, ISuperTask<RESULT>() {
+abstract class ISuperEvaluationTask<RESULT> : IEvaluation<RESULT>, ISuperTask<RESULT>() {
 
     override fun start() {
 
@@ -26,7 +26,7 @@ abstract class ISuperEvaluation<RESULT> : IEvaluation<RESULT>, ISuperTask<RESULT
 
     protected var resultAction: ((RESULT) -> Unit)? = null
 
-    open fun successAction(resultAction: (RESULT) -> Unit): ISuperEvaluation<RESULT> {
+    open fun successAction(resultAction: (RESULT) -> Unit): ISuperEvaluationTask<RESULT> {
 
         this.resultAction = resultAction
 
@@ -35,7 +35,7 @@ abstract class ISuperEvaluation<RESULT> : IEvaluation<RESULT>, ISuperTask<RESULT
 
     protected var failAction: ((Throwable) -> Unit)? = null
 
-    open fun failAction(failAction: (Throwable) -> Unit): ISuperEvaluation<RESULT> {
+    open fun failAction(failAction: (Throwable) -> Unit): ISuperEvaluationTask<RESULT> {
 
         this.failAction = failAction
 

@@ -2,16 +2,16 @@ package com.ypz.killetom.rxjava3.lib_rxtask.task
 
 import com.ypz.killetom.rxjava3.lib_rxtask.exception.RxTaskCancelException
 import com.ypz.killetom.rxjava3.lib_rxtask.exception.RxTaskRunningException
-import com.ypz.killetom.rxjava3.lib_rxtask.base.ISuperEvaluation
+import com.ypz.killetom.rxjava3.lib_rxtask.base.ISuperEvaluationTask
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Maybe
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.schedulers.Schedulers
 
-class RxSingleEvaluationTask<RESULT>
+class RxSingleEvaluationTaskTask<RESULT>
 private constructor(
-    private val runnable: (RxSingleEvaluationTask<RESULT>) -> RESULT
-) : ISuperEvaluation<RESULT>() {
+    private val runnable: (RxSingleEvaluationTaskTask<RESULT>) -> RESULT
+) : ISuperEvaluationTask<RESULT>() {
 
     private val resultTask: Maybe<RESULT>
     private var disposable: Disposable? = null
@@ -23,21 +23,13 @@ private constructor(
             try {
 
                 if (TASK_CURRENT_STATUS == CANCEL_STATUS) {
-                    emitter.onError(
-                        RxTaskCancelException(
-                            "Task cancel"
-                        )
-                    )
+                    emitter.onError(RxTaskCancelException("Task cancel"))
                 }
 
                 val action = evaluationAction()
 
                 if (TASK_CURRENT_STATUS == CANCEL_STATUS) {
-                    emitter.onError(
-                        RxTaskCancelException(
-                            "Task cancel"
-                        )
-                    )
+                    emitter.onError(RxTaskCancelException("Task cancel"))
                 }
 
                 emitter.onSuccess(action)
@@ -45,9 +37,7 @@ private constructor(
             } catch (e: Exception) {
 
                 emitter.onError(e)
-
             }
-
         }
     }
 
@@ -71,7 +61,6 @@ private constructor(
                 { resultAction(it) },
                 { errorAction(it) }
             )
-
     }
 
     override fun cancel() {
@@ -93,19 +82,21 @@ private constructor(
     }
 
 
-
-     override fun finalResetAction() {
+    override fun finalResetAction() {
 
         disposable?.dispose()
         disposable = null
 
     }
 
-    companion object{
+    companion object {
 
-        fun <RESULT> createTask(taskRunnable:(RxSingleEvaluationTask<RESULT>)->RESULT): RxSingleEvaluationTask<RESULT> {
-            return RxSingleEvaluationTask(taskRunnable)
+        fun <RESULT> createTask(
+            taskRunnable:
+                (RxSingleEvaluationTaskTask<RESULT>) -> RESULT
+        )
+                : RxSingleEvaluationTaskTask<RESULT> {
+            return RxSingleEvaluationTaskTask(taskRunnable)
         }
-
     }
 }

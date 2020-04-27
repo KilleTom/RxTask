@@ -3,18 +3,18 @@ package com.ypz.killetom.rxjava3.lib_rxtask.task
 import com.ypz.killetom.rxjava3.lib_rxtask.exception.RxTaskCancelException
 import com.ypz.killetom.rxjava3.lib_rxtask.exception.RxTaskEvaluationException
 import com.ypz.killetom.rxjava3.lib_rxtask.exception.RxTaskRunningException
-import com.ypz.killetom.rxjava3.lib_rxtask.base.ISuperEvaluation
+import com.ypz.killetom.rxjava3.lib_rxtask.base.ISuperEvaluationTask
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Maybe
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.schedulers.Schedulers
 import io.reactivex.rxjava3.subjects.PublishSubject
 
-class RxProgressEvaluationTask<PROGRESS, RESULT> private constructor
-    (createRunnable: (RxProgressEvaluationTask<PROGRESS, RESULT>) -> RESULT) :
-    ISuperEvaluation<RESULT>() {
+class RxProgressEvaluationTaskTask<PROGRESS, RESULT> private constructor
+    (createRunnable: (RxProgressEvaluationTaskTask<PROGRESS, RESULT>) -> RESULT) :
+    ISuperEvaluationTask<RESULT>() {
 
-    private var createRunnable: ((RxProgressEvaluationTask<PROGRESS, RESULT>) -> RESULT)? =
+    private var createRunnable: ((RxProgressEvaluationTaskTask<PROGRESS, RESULT>) -> RESULT)? =
         createRunnable
 
     private val resultTask: Maybe<RESULT>
@@ -135,7 +135,7 @@ class RxProgressEvaluationTask<PROGRESS, RESULT> private constructor
 
     }
 
-    fun progressAction(action: (PROGRESS) -> Unit): RxProgressEvaluationTask<PROGRESS, RESULT> {
+    fun progressAction(action: (PROGRESS) -> Unit): RxProgressEvaluationTaskTask<PROGRESS, RESULT> {
 
         progressAction = action
 
@@ -152,10 +152,10 @@ class RxProgressEvaluationTask<PROGRESS, RESULT> private constructor
     companion object {
 
         fun <PROGRESS, RESULT> createTask(
-            taskRunnable: (RxProgressEvaluationTask<PROGRESS, RESULT>) -> RESULT
+            taskRunnable: (RxProgressEvaluationTaskTask<PROGRESS, RESULT>) -> RESULT
         )
-                : RxProgressEvaluationTask<PROGRESS, RESULT> {
-            return RxProgressEvaluationTask(taskRunnable)
+                : RxProgressEvaluationTaskTask<PROGRESS, RESULT> {
+            return RxProgressEvaluationTaskTask(taskRunnable)
         }
     }
 }

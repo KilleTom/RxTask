@@ -9,8 +9,8 @@ import android.os.Bundle
 import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.JsonObject
-import com.ypz.killetom.rxjava3.lib_rxtask.task.RxProgressEvaluationTask
-import com.ypz.killetom.rxjava3.lib_rxtask.task.RxSingleEvaluationTask
+import com.ypz.killetom.rxjava3.lib_rxtask.task.RxProgressEvaluationTaskTask
+import com.ypz.killetom.rxjava3.lib_rxtask.task.RxSingleEvaluationTaskTask
 import com.ypz.killetom.rxjava3.lib_rxtask.task.RxTimerTask
 import io.reactivex.rxjava3.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_main.*
@@ -30,7 +30,7 @@ class MainActivity : AppCompatActivity() {
             .writeTimeout(60000, TimeUnit.MILLISECONDS)
             .build()
 
-        val singleTask = RxSingleEvaluationTask.createTask<JsonObject> {
+        val singleTask = RxSingleEvaluationTaskTask.createTask<JsonObject> {
 
             val result = okHttpClient.newCall(createRequest(createNewUrl("top")))
                 .execute()
@@ -40,7 +40,7 @@ class MainActivity : AppCompatActivity() {
             return@createTask Gson().fromJson(body.string(), JsonObject::class.java)
         }
 
-        val progressTask = RxProgressEvaluationTask
+        val progressTask = RxProgressEvaluationTaskTask
             .createTask<JsonObject, Boolean> { task ->
 
 
