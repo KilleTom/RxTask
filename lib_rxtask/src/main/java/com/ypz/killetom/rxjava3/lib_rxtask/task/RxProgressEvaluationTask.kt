@@ -10,11 +10,11 @@ import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.schedulers.Schedulers
 import io.reactivex.rxjava3.subjects.PublishSubject
 
-class RxProgressEvaluationTaskI<PROGRESS, RESULT> private constructor
-    (createRunnable: (RxProgressEvaluationTaskI<PROGRESS, RESULT>) -> RESULT) :
+class RxProgressEvaluationTask<PROGRESS, RESULT> private constructor
+    (createRunnable: (RxProgressEvaluationTask<PROGRESS, RESULT>) -> RESULT) :
     ISuperEvaluation<RESULT>() {
 
-    private var createRunnable: ((RxProgressEvaluationTaskI<PROGRESS, RESULT>) -> RESULT)? = createRunnable
+    private var createRunnable: ((RxProgressEvaluationTask<PROGRESS, RESULT>) -> RESULT)? = createRunnable
 
     private val resultTask: Maybe<RESULT>
     private var resultDisposable: Disposable? = null
@@ -134,7 +134,7 @@ class RxProgressEvaluationTaskI<PROGRESS, RESULT> private constructor
 
     }
 
-    fun progressAction(action: (PROGRESS) -> Unit): RxProgressEvaluationTaskI<PROGRESS, RESULT> {
+    fun progressAction(action: (PROGRESS) -> Unit): RxProgressEvaluationTask<PROGRESS, RESULT> {
 
         progressAction = action
 
@@ -150,8 +150,8 @@ class RxProgressEvaluationTaskI<PROGRESS, RESULT> private constructor
 
     companion object {
 
-        fun createTask(taskRunnable: (RxProgressEvaluationTaskI<Any, Any>) -> Any): RxProgressEvaluationTaskI<Any, Any> {
-            return RxProgressEvaluationTaskI(taskRunnable)
+        fun createTask(taskRunnable: (RxProgressEvaluationTask<Any, Any>) -> Any): RxProgressEvaluationTask<Any, Any> {
+            return RxProgressEvaluationTask(taskRunnable)
         }
     }
 }
