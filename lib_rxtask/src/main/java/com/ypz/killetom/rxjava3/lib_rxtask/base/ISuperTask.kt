@@ -26,7 +26,9 @@ abstract class ISuperTask<RESULT> :  ITask<RESULT>{
 
     }
 
-    abstract fun finalResetAction()
+    protected open fun finalResetAction(){
+
+    }
 
     abstract fun running(): Boolean
 

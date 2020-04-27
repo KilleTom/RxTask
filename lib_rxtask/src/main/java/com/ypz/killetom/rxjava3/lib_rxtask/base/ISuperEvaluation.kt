@@ -51,15 +51,15 @@ abstract class ISuperEvaluation<RESULT> : IEvaluation<RESULT>, ISuperTask<RESULT
     //内部错误回调
     protected fun errorAction(t: Throwable) {
 
-
-        if (running())
-            failAction?.invoke(t)
-
         if (t is RxTaskCancelException) {
 
             TASK_CURRENT_STATUS = CANCEL_STATUS
 
         } else {
+
+            if (TASK_CURRENT_STATUS == RUNNING_STATUS){
+                failAction?.invoke(t)
+            }
 
             TASK_CURRENT_STATUS = ERROR_STATUS
 
@@ -71,7 +71,7 @@ abstract class ISuperEvaluation<RESULT> : IEvaluation<RESULT>, ISuperTask<RESULT
     //结果回调
     protected fun resultAction(result: RESULT) {
 
-        if (running()) {
+        if (TASK_CURRENT_STATUS == RUNNING_STATUS) {
 
             resultAction?.invoke(result)
 

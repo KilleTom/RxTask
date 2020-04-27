@@ -1,7 +1,6 @@
 package com.ypz.killetom.rxjava3.lib_rxtask.task
 
 import com.ypz.killetom.rxjava3.lib_rxtask.exception.RxTaskCancelException
-import com.ypz.killetom.rxjava3.lib_rxtask.exception.RxTaskEvaluationException
 import com.ypz.killetom.rxjava3.lib_rxtask.exception.RxTaskRunningException
 import com.ypz.killetom.rxjava3.lib_rxtask.base.ISuperEvaluation
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
@@ -9,12 +8,14 @@ import io.reactivex.rxjava3.core.Maybe
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.schedulers.Schedulers
 
-class RxSingleEvaluationTaskI<RESULT> : ISuperEvaluation<RESULT>() {
+class RxSingleEvaluationTask<RESULT>
+private constructor(
+    private val runnable: (RxSingleEvaluationTask<RESULT>) -> RESULT
+) : ISuperEvaluation<RESULT>() {
 
     private val resultTask: Maybe<RESULT>
-    var disposable: Disposable? = null
+    private var disposable: Disposable? = null
 
-    private var evaluationRunnable: ((task: RxSingleEvaluationTaskI<RESULT>) -> RESULT)? = null
 
     init {
         resultTask = Maybe.create<RESULT> { emitter ->
@@ -52,11 +53,6 @@ class RxSingleEvaluationTaskI<RESULT> : ISuperEvaluation<RESULT>() {
 
     override fun evaluationAction(): RESULT {
 
-        val runnable = evaluationRunnable
-            ?: throw RxTaskEvaluationException(
-                "not evaluation expression"
-            )
-
         if (!running())
             throw RxTaskRunningException(
                 "Task unRunning"
@@ -80,10 +76,9 @@ class RxSingleEvaluationTaskI<RESULT> : ISuperEvaluation<RESULT>() {
 
     override fun cancel() {
 
-        TASK_CURRENT_STATUS == CANCEL_STATUS
+        TASK_CURRENT_STATUS = CANCEL_STATUS
 
-
-
+        finalResetAction()
     }
 
     override fun running(): Boolean {
@@ -97,10 +92,20 @@ class RxSingleEvaluationTaskI<RESULT> : ISuperEvaluation<RESULT>() {
         return false
     }
 
-    override fun finalResetAction() {
+
+
+     override fun finalResetAction() {
 
         disposable?.dispose()
         disposable = null
+
+    }
+
+    companion object{
+
+        fun <RESULT> createTask(taskRunnable:(RxSingleEvaluationTask<RESULT>)->RESULT): RxSingleEvaluationTask<RESULT> {
+            return RxSingleEvaluationTask(taskRunnable)
+        }
 
     }
 }
