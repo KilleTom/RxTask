@@ -8,7 +8,7 @@ import io.reactivex.rxjava3.schedulers.Schedulers
 import java.util.concurrent.TimeUnit
 
 open class RxTimerTask
-private constructor(val timerAction: (RxTimerTask) -> Unit) : ISuperTask<Long>() {
+private constructor(private val timerAction: (RxTimerTask) -> Unit) : ISuperTask<Long>() {
 
     private var timerDisposable: Disposable? = null
 

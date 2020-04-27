@@ -1,5 +1,9 @@
 package com.ypz.killetom.rxjava3.rxtask
 
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -7,6 +11,8 @@ import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.ypz.killetom.rxjava3.lib_rxtask.task.RxProgressEvaluationTask
 import com.ypz.killetom.rxjava3.lib_rxtask.task.RxSingleEvaluationTask
+import com.ypz.killetom.rxjava3.lib_rxtask.task.RxTimerTask
+import io.reactivex.rxjava3.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_main.*
 import okhttp3.*
 import java.util.concurrent.TimeUnit
@@ -24,7 +30,6 @@ class MainActivity : AppCompatActivity() {
             .writeTimeout(60000, TimeUnit.MILLISECONDS)
             .build()
 
-
         val singleTask = RxSingleEvaluationTask.createTask<JsonObject> {
 
             val result = okHttpClient.newCall(createRequest(createNewUrl("top")))
@@ -34,7 +39,6 @@ class MainActivity : AppCompatActivity() {
 
             return@createTask Gson().fromJson(body.string(), JsonObject::class.java)
         }
-
 
         val progressTask = RxProgressEvaluationTask
             .createTask<JsonObject, Boolean> { task ->
@@ -60,6 +64,48 @@ class MainActivity : AppCompatActivity() {
                 return@createTask true
             }
 
+        val manager = application
+            .getSystemService(Context.CONNECTIVITY_SERVICE)
+                as ConnectivityManager
+
+        val timerTask = RxTimerTask.createTask {task->
+
+            if (task.getTimeTick().countTimes >=10){
+                task.cancel()
+            }
+
+            if (Build.VERSION.SDK_INT >= 23) {
+
+                val network = manager.activeNetwork
+
+                if (network == null){
+                    Log.d("KilleTom","network null connect false")
+                    return@createTask
+                }
+
+                val connectInfo = manager
+                    .getNetworkCapabilities(network)
+
+                if (connectInfo == null){
+                    Log.d("KilleTom","connectInfo null connect false")
+                    return@createTask
+                }
+
+
+                val isInterNet =
+                    connectInfo.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+
+                Log.d("KilleTom", "$isInterNet")
+
+            }
+
+            return@createTask
+
+        }.setDelayTime(0L)
+            .setIntervalTime(1000)
+            .setTaskScheduler(Schedulers.computation())
+
+
         single.setOnClickListener {
 
             singleTask.successAction {
@@ -70,7 +116,6 @@ class MainActivity : AppCompatActivity() {
 
         }
 
-
         progress.setOnClickListener {
             progressTask.progressAction {
                 Log.i("KilleTom", "收到进度,message:$it")
@@ -79,6 +124,10 @@ class MainActivity : AppCompatActivity() {
             }.failAction {
                 Log.i("KilleTom", "error message:${it.message ?: "unknown"}")
             }.start()
+        }
+
+        timer.setOnClickListener {
+            timerTask.start()
         }
     }
 
