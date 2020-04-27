@@ -1,4 +1,4 @@
-package com.ypz.killetom.rxjava3.lib_rxtask.base;
+package com.ypz.killetom.rxjava3.lib_rxtask.exception;
 
 public class RxTaskEvaluationException extends RxTaskSuperException {
 

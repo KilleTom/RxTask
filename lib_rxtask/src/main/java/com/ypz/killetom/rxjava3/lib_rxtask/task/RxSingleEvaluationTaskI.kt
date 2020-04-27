@@ -1,34 +1,42 @@
 package com.ypz.killetom.rxjava3.lib_rxtask.task
 
-import com.ypz.killetom.rxjava3.lib_rxtask.base.RxTaskCancelException
-import com.ypz.killetom.rxjava3.lib_rxtask.base.RxTaskEvaluationException
-import com.ypz.killetom.rxjava3.lib_rxtask.base.RxTaskRunningException
-import com.ypz.killetom.rxjava3.lib_rxtask.base.SuperTask
+import com.ypz.killetom.rxjava3.lib_rxtask.exception.RxTaskCancelException
+import com.ypz.killetom.rxjava3.lib_rxtask.exception.RxTaskEvaluationException
+import com.ypz.killetom.rxjava3.lib_rxtask.exception.RxTaskRunningException
+import com.ypz.killetom.rxjava3.lib_rxtask.base.ISuperEvaluation
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Maybe
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.schedulers.Schedulers
 
-class SingleTask<Result> : SuperTask<Result>() {
+class RxSingleEvaluationTaskI<RESULT> : ISuperEvaluation<RESULT>() {
 
-    private val creater: Maybe<Result>
+    private val resultTask: Maybe<RESULT>
     var disposable: Disposable? = null
 
-    private var evaluationRunnable: ((task: SingleTask<Result>) -> Result)? = null
+    private var evaluationRunnable: ((task: RxSingleEvaluationTaskI<RESULT>) -> RESULT)? = null
 
     init {
-        creater = Maybe.create<Result> { emitter ->
+        resultTask = Maybe.create<RESULT> { emitter ->
 
             try {
 
                 if (TASK_CURRENT_STATUS == CANCEL_STATUS) {
-                    emitter.onError(RxTaskCancelException("Task cancel"))
+                    emitter.onError(
+                        RxTaskCancelException(
+                            "Task cancel"
+                        )
+                    )
                 }
 
                 val action = evaluationAction()
 
                 if (TASK_CURRENT_STATUS == CANCEL_STATUS) {
-                    emitter.onError(RxTaskCancelException("Task cancel"))
+                    emitter.onError(
+                        RxTaskCancelException(
+                            "Task cancel"
+                        )
+                    )
                 }
 
                 emitter.onSuccess(action)
@@ -42,13 +50,17 @@ class SingleTask<Result> : SuperTask<Result>() {
         }
     }
 
-    override fun evaluationAction(): Result {
+    override fun evaluationAction(): RESULT {
 
         val runnable = evaluationRunnable
-            ?: throw RxTaskEvaluationException("not evaluation expression")
+            ?: throw RxTaskEvaluationException(
+                "not evaluation expression"
+            )
 
         if (!running())
-            throw RxTaskRunningException("Task unRunning")
+            throw RxTaskRunningException(
+                "Task unRunning"
+            )
 
         return runnable.invoke(this)
     }
@@ -56,7 +68,7 @@ class SingleTask<Result> : SuperTask<Result>() {
     override fun start() {
         super.start()
 
-        disposable = creater
+        disposable = resultTask
             .subscribeOn(Schedulers.newThread())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
@@ -70,9 +82,7 @@ class SingleTask<Result> : SuperTask<Result>() {
 
         TASK_CURRENT_STATUS == CANCEL_STATUS
 
-        disposable?.dispose()
 
-        disposable = null
 
     }
 
@@ -81,9 +91,16 @@ class SingleTask<Result> : SuperTask<Result>() {
         val dis = disposable ?: return false
 
         if (TASK_CURRENT_STATUS == RUNNING_STATUS) {
-            return dis.isDisposed != false
+            return !dis.isDisposed
         }
 
         return false
+    }
+
+    override fun finalResetAction() {
+
+        disposable?.dispose()
+        disposable = null
+
     }
 }
