@@ -14,7 +14,8 @@ class RxProgressEvaluationTask<PROGRESS, RESULT> private constructor
     (createRunnable: (RxProgressEvaluationTask<PROGRESS, RESULT>) -> RESULT) :
     ISuperEvaluation<RESULT>() {
 
-    private var createRunnable: ((RxProgressEvaluationTask<PROGRESS, RESULT>) -> RESULT)? = createRunnable
+    private var createRunnable: ((RxProgressEvaluationTask<PROGRESS, RESULT>) -> RESULT)? =
+        createRunnable
 
     private val resultTask: Maybe<RESULT>
     private var resultDisposable: Disposable? = null
@@ -74,7 +75,7 @@ class RxProgressEvaluationTask<PROGRESS, RESULT> private constructor
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 {
-
+                    progressAction?.invoke(it)
                 },
                 {
                     //nothing to do by error
@@ -150,7 +151,10 @@ class RxProgressEvaluationTask<PROGRESS, RESULT> private constructor
 
     companion object {
 
-        fun createTask(taskRunnable: (RxProgressEvaluationTask<Any, Any>) -> Any): RxProgressEvaluationTask<Any, Any> {
+        fun <PROGRESS, RESULT> createTask(
+            taskRunnable: (RxProgressEvaluationTask<PROGRESS, RESULT>) -> RESULT
+        )
+                : RxProgressEvaluationTask<PROGRESS, RESULT> {
             return RxProgressEvaluationTask(taskRunnable)
         }
     }

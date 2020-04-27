@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.JsonObject
+import com.ypz.killetom.rxjava3.lib_rxtask.task.RxProgressEvaluationTask
 import com.ypz.killetom.rxjava3.lib_rxtask.task.RxSingleEvaluationTask
 import kotlinx.android.synthetic.main.activity_main.*
 import okhttp3.*
@@ -29,32 +30,67 @@ class MainActivity : AppCompatActivity() {
             val result = okHttpClient.newCall(createRequest(createNewUrl("top")))
                 .execute()
 
-            val body = result.body?:throw RuntimeException("body null")
+            val body = result.body ?: throw RuntimeException("body null")
 
-            return@createTask Gson().fromJson(body.string(),JsonObject::class.java)
+            return@createTask Gson().fromJson(body.string(), JsonObject::class.java)
         }
+
+
+        val progressTask = RxProgressEvaluationTask
+            .createTask<JsonObject, Boolean> { task ->
+
+
+                val types = arrayListOf<String>("top", "shehui", "guonei")
+
+                types.forEach { value ->
+
+                    val result = okHttpClient
+                        .newCall(createRequest(createNewUrl(value)))
+                        .execute()
+
+                    val body = result.body ?: throw RuntimeException("body null")
+
+                    val jsonObject = Gson().fromJson(body.string(), JsonObject::class.java)
+
+                    Log.d("KilleTom", "推送新闻类型$value")
+
+                    task.publishProgressAction(jsonObject)
+                }
+
+                return@createTask true
+            }
 
         single.setOnClickListener {
 
             singleTask.successAction {
-                Log.i("KilleTom","$it")
+                Log.i("KilleTom", "$it")
             }.failAction {
                 it.printStackTrace()
             }.start()
 
         }
 
+
+        progress.setOnClickListener {
+            progressTask.progressAction {
+                Log.i("KilleTom", "收到进度,message:$it")
+            }.successAction {
+                Log.i("KilleTom", "Done")
+            }.failAction {
+                Log.i("KilleTom", "error message:${it.message ?: "unknown"}")
+            }.start()
+        }
     }
 
-    private fun createNewUrl(type:String): HttpUrl {
+    private fun createNewUrl(type: String): HttpUrl {
         val url = HttpUrl
             .Builder()
             .scheme("https")
             .host("v.juhe.cn")
             .addEncodedPathSegment("toutiao")
             .addEncodedPathSegment("index")
-            .addQueryParameter("type",type)
-            .addQueryParameter("key","13728f03ef29af183184d6d30dc6ae43")
+            .addQueryParameter("type", type)
+            .addQueryParameter("key", "13728f03ef29af183184d6d30dc6ae43")
             .build()
 
         return url
