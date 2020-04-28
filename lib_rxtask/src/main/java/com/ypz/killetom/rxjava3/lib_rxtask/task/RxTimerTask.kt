@@ -12,8 +12,6 @@ private constructor(private val timerAction: (RxTimerTask) -> Unit) : ISuperTask
 
     private var timerDisposable: Disposable? = null
 
-//    private val
-
     private var workDelayTime: Long = workDelayDefaultTime
 
     private var workIntervalTime: Long = workIntervalDefaultTime
@@ -22,7 +20,7 @@ private constructor(private val timerAction: (RxTimerTask) -> Unit) : ISuperTask
 
     private var workScheduler = getDefaultWorkScheduler()
 
-    private val ticker = TimerTick()
+    protected val ticker = createTicker()
 
     private var errorAction: ((Throwable) -> Unit)? = null
 
@@ -88,7 +86,11 @@ private constructor(private val timerAction: (RxTimerTask) -> Unit) : ISuperTask
         timerDisposable = null
     }
 
-    open fun getTimeTick(): TimerTick {
+    open fun createTicker(): TimerTicker {
+        return TimerTicker()
+    }
+
+    open fun getTimeTicker(): TimerTicker {
         return ticker
     }
 
@@ -128,7 +130,7 @@ private constructor(private val timerAction: (RxTimerTask) -> Unit) : ISuperTask
         return this
     }
 
-    open class TimerTick {
+    open class TimerTicker {
 
         var startTime: Long = -1
 

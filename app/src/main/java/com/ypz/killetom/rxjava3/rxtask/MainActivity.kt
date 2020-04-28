@@ -69,7 +69,7 @@ class MainActivity : AppCompatActivity() {
 
         val timerTask = RxTimerTask.createTask {task->
 
-            if (task.getTimeTick().countTimes >=10){
+            if (task.getTimeTicker().countTimes >=10){
                 task.cancel()
             }
 
