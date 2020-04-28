@@ -43,7 +43,6 @@ class MainActivity : AppCompatActivity() {
         val progressTask = RxProgressEvaluationTaskTask
             .createTask<JsonObject, Boolean> { task ->
 
-
                 val types = arrayListOf<String>("top", "shehui", "guonei")
 
                 types.forEach { value ->

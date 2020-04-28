@@ -11,11 +11,8 @@ import io.reactivex.rxjava3.schedulers.Schedulers
 import io.reactivex.rxjava3.subjects.PublishSubject
 
 class RxProgressEvaluationTaskTask<PROGRESS, RESULT> private constructor
-    (createRunnable: (RxProgressEvaluationTaskTask<PROGRESS, RESULT>) -> RESULT) :
+    (private val createRunnable: (RxProgressEvaluationTaskTask<PROGRESS, RESULT>) -> RESULT) :
     ISuperEvaluationTask<RESULT>() {
-
-    private var createRunnable: ((RxProgressEvaluationTaskTask<PROGRESS, RESULT>) -> RESULT)? =
-        createRunnable
 
     private val resultTask: Maybe<RESULT>
     private var resultDisposable: Disposable? = null
@@ -86,23 +83,13 @@ class RxProgressEvaluationTaskTask<PROGRESS, RESULT> private constructor
 
     override fun evaluationAction(): RESULT {
 
-        val runnable = createRunnable
-            ?: throw RxTaskEvaluationException(
-                "not evaluation expression"
-            )
+        if (!running())
+            throw RxTaskRunningException("Task unRunning")
+
+        val result = createRunnable.invoke(this)
 
         if (!running())
-            throw RxTaskRunningException(
-                "Task unRunning"
-            )
-
-        val result = runnable.invoke(this)
-
-        //throw RunningException when result by evaluation
-        if (!running())
-            throw RxTaskRunningException(
-                "Task unRunning"
-            )
+            throw RxTaskRunningException("Task unRunning")
 
         return result
     }
