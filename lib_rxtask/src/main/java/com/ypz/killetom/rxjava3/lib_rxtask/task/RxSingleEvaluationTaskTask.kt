@@ -3,14 +3,16 @@ package com.ypz.killetom.rxjava3.lib_rxtask.task
 import com.ypz.killetom.rxjava3.lib_rxtask.exception.RxTaskCancelException
 import com.ypz.killetom.rxjava3.lib_rxtask.exception.RxTaskRunningException
 import com.ypz.killetom.rxjava3.lib_rxtask.base.ISuperEvaluationTask
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import com.ypz.killetom.rxjava3.lib_rxtask.base.RxTaskScheduler
+import com.ypz.killetom.rxjava3.lib_rxtask.scheduler.RxTaskSchedulerManager
 import io.reactivex.rxjava3.core.Maybe
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.schedulers.Schedulers
 
 class RxSingleEvaluationTaskTask<RESULT>
-private constructor(
-    private val runnable: (RxSingleEvaluationTaskTask<RESULT>) -> RESULT
+internal constructor(
+    private val runnable: (RxSingleEvaluationTaskTask<RESULT>) -> RESULT,
+    private val taskScheduler: RxTaskScheduler
 ) : ISuperEvaluationTask<RESULT>() {
 
     private val resultTask: Maybe<RESULT>
@@ -55,8 +57,8 @@ private constructor(
         super.start()
 
         disposable = resultTask
-            .subscribeOn(Schedulers.newThread())
-            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeOn(taskScheduler.getSubscribeScheduler())
+            .observeOn(taskScheduler.getObserveScheduler())
             .subscribe(
                 { resultAction(it) },
                 { errorAction(it) }
@@ -93,10 +95,18 @@ private constructor(
 
         fun <RESULT> createTask(
             taskRunnable:
-                (RxSingleEvaluationTaskTask<RESULT>) -> RESULT
+                (RxSingleEvaluationTaskTask<*>) -> RESULT)
+                : RxSingleEvaluationTaskTask<RESULT> {
+            return RxSingleEvaluationTaskTask(taskRunnable, RxTaskSchedulerManager.getLocalScheduler())
+        }
+
+        fun <RESULT> createTask(
+            taskRunnable:
+                (RxSingleEvaluationTaskTask<*>) -> RESULT,
+            rxTaskScheduler: RxTaskScheduler = RxTaskSchedulerManager.getLocalScheduler()
         )
                 : RxSingleEvaluationTaskTask<RESULT> {
-            return RxSingleEvaluationTaskTask(taskRunnable)
+            return RxSingleEvaluationTaskTask(taskRunnable,rxTaskScheduler)
         }
     }
 }

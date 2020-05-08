@@ -1,3 +1,4 @@
 rootProject.name='RxTask'
 include ':app'
 include ':lib_rxtask'
+include ':lib_rxtask_android_scheduler'

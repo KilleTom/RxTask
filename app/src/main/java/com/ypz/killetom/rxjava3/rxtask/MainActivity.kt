@@ -9,9 +9,11 @@ import android.os.Bundle
 import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.JsonObject
+import com.ypz.killetom.rxjava3.lib_rxtask.scheduler.RxTaskSchedulerManager
 import com.ypz.killetom.rxjava3.lib_rxtask.task.RxProgressEvaluationTaskTask
 import com.ypz.killetom.rxjava3.lib_rxtask.task.RxSingleEvaluationTaskTask
 import com.ypz.killetom.rxjava3.lib_rxtask.task.RxTimerTask
+import com.ypz.killetom.rxjava3.lib_rxtask_android.scheduler.RxAndroidDefaultScheduler
 import io.reactivex.rxjava3.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_main.*
 import okhttp3.*
@@ -30,15 +32,18 @@ class MainActivity : AppCompatActivity() {
             .writeTimeout(60000, TimeUnit.MILLISECONDS)
             .build()
 
-        val singleTask = RxSingleEvaluationTaskTask
-            .createTask<JsonObject> {
+        RxTaskSchedulerManager.setLocalScheduler(RxAndroidDefaultScheduler())
 
-            val result = okHttpClient.newCall(createRequest(createNewUrl("top")))
+        val singleTask = RxSingleEvaluationTaskTask.createTask {
+
+            val response = okHttpClient.newCall(createRequest(createNewUrl("top")))
                 .execute()
 
-            val body = result.body ?: throw RuntimeException("body null")
+            val body = response.body ?: throw RuntimeException("body null")
 
-            return@createTask Gson().fromJson(body.string(), JsonObject::class.java)
+            val result = Gson().fromJson(body.string(), JsonObject::class.java)
+
+            return@createTask result
         }
 
         val progressTask = RxProgressEvaluationTaskTask
@@ -68,9 +73,9 @@ class MainActivity : AppCompatActivity() {
             .getSystemService(Context.CONNECTIVITY_SERVICE)
                 as ConnectivityManager
 
-        val timerTask = RxTimerTask.createTask {task->
+        val timerTask = RxTimerTask.createTask { task ->
 
-            if (task.getTimeTicker().countTimes >=10){
+            if (task.getTimeTicker().countTimes >= 10) {
                 task.cancel()
             }
 
@@ -78,16 +83,16 @@ class MainActivity : AppCompatActivity() {
 
                 val network = manager.activeNetwork
 
-                if (network == null){
-                    Log.d("KilleTom","network null connect false")
+                if (network == null) {
+                    Log.d("KilleTom", "network null connect false")
                     return@createTask
                 }
 
                 val connectInfo = manager
                     .getNetworkCapabilities(network)
 
-                if (connectInfo == null){
-                    Log.d("KilleTom","connectInfo null connect false")
+                if (connectInfo == null) {
+                    Log.d("KilleTom", "connectInfo null connect false")
                     return@createTask
                 }
 

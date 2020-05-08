@@ -30,8 +30,7 @@ private constructor(private val timerAction: (RxTimerTask) -> Unit) : ISuperTask
 
         ticker.startTime = System.currentTimeMillis()
 
-        timerDisposable = Flowable.interval(workDelayTime, workIntervalTime, workTimeUnit)
-            .observeOn(workScheduler)
+        timerDisposable = Flowable.interval(workDelayTime, workIntervalTime, workTimeUnit,workScheduler)
             .subscribe(
                 { times ->
                     if (running()) {
@@ -86,7 +85,7 @@ private constructor(private val timerAction: (RxTimerTask) -> Unit) : ISuperTask
         timerDisposable = null
     }
 
-    open fun createTicker(): TimerTicker {
+    protected open fun createTicker(): TimerTicker {
         return TimerTicker()
     }
 

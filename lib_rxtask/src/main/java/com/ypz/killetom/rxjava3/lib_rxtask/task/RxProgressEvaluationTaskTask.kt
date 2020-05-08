@@ -4,14 +4,17 @@ import com.ypz.killetom.rxjava3.lib_rxtask.exception.RxTaskCancelException
 import com.ypz.killetom.rxjava3.lib_rxtask.exception.RxTaskEvaluationException
 import com.ypz.killetom.rxjava3.lib_rxtask.exception.RxTaskRunningException
 import com.ypz.killetom.rxjava3.lib_rxtask.base.ISuperEvaluationTask
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import com.ypz.killetom.rxjava3.lib_rxtask.base.RxTaskScheduler
+import com.ypz.killetom.rxjava3.lib_rxtask.scheduler.RxTaskSchedulerManager
 import io.reactivex.rxjava3.core.Maybe
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.schedulers.Schedulers
 import io.reactivex.rxjava3.subjects.PublishSubject
 
-class RxProgressEvaluationTaskTask<PROGRESS, RESULT> private constructor
-    (private val createRunnable: (RxProgressEvaluationTaskTask<PROGRESS, RESULT>) -> RESULT) :
+class RxProgressEvaluationTaskTask<PROGRESS, RESULT>
+private constructor(
+    private val createRunnable: (RxProgressEvaluationTaskTask<PROGRESS, RESULT>) -> RESULT,
+    private val rxTaskScheduler: RxTaskScheduler) :
     ISuperEvaluationTask<RESULT>() {
 
     private val resultTask: Maybe<RESULT>
@@ -60,16 +63,16 @@ class RxProgressEvaluationTaskTask<PROGRESS, RESULT> private constructor
         super.start()
 
         resultDisposable = resultTask
-            .subscribeOn(Schedulers.newThread())
-            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeOn(rxTaskScheduler.getSubscribeScheduler())
+            .observeOn(rxTaskScheduler.getObserveScheduler())
             .subscribe(
                 { resultAction(it) },
                 { errorAction(it) }
             )
 
         progressDisposable = progressTask
-            .subscribeOn(Schedulers.newThread())
-            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeOn(rxTaskScheduler.getSubscribeScheduler())
+            .observeOn(rxTaskScheduler.getObserveScheduler())
             .subscribe(
                 {
                     progressAction?.invoke(it)
@@ -142,7 +145,15 @@ class RxProgressEvaluationTaskTask<PROGRESS, RESULT> private constructor
             taskRunnable: (RxProgressEvaluationTaskTask<PROGRESS, RESULT>) -> RESULT
         )
                 : RxProgressEvaluationTaskTask<PROGRESS, RESULT> {
-            return RxProgressEvaluationTaskTask(taskRunnable)
+            return RxProgressEvaluationTaskTask(taskRunnable,RxTaskSchedulerManager.getLocalScheduler())
+        }
+
+        fun <PROGRESS, RESULT> createTask(
+            taskRunnable: (RxProgressEvaluationTaskTask<PROGRESS, RESULT>) -> RESULT,
+            rxTaskScheduler: RxTaskScheduler = RxTaskSchedulerManager.getLocalScheduler()
+        )
+                : RxProgressEvaluationTaskTask<PROGRESS, RESULT> {
+            return RxProgressEvaluationTaskTask(taskRunnable,rxTaskScheduler)
         }
     }
 }
