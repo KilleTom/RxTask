@@ -30,7 +30,8 @@ class MainActivity : AppCompatActivity() {
             .writeTimeout(60000, TimeUnit.MILLISECONDS)
             .build()
 
-        val singleTask = RxSingleEvaluationTaskTask.createTask<JsonObject> {
+        val singleTask = RxSingleEvaluationTaskTask
+            .createTask<JsonObject> {
 
             val result = okHttpClient.newCall(createRequest(createNewUrl("top")))
                 .execute()
@@ -116,6 +117,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         progress.setOnClickListener {
+
             progressTask.progressAction {
                 Log.i("KilleTom", "收到进度,message:$it")
             }.successAction {
@@ -123,6 +125,7 @@ class MainActivity : AppCompatActivity() {
             }.failAction {
                 Log.i("KilleTom", "error message:${it.message ?: "unknown"}")
             }.start()
+
         }
 
         timer.setOnClickListener {
