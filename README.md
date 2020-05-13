@@ -4,7 +4,7 @@
 
 [可以通过该网站获取版本 https://jitpack.io/#KilleTom/rxtask](https://jitpack.io/#KilleTom/rxtask)
 
-注意`v0.0.1-beta`还没有抽离Scheduler 建议从`v1.0.0-beta`开始使用
+注意`v0.0.1-beta`还没有抽离Scheduler 建议从`v1.0.3-beta`开始使用
 
 ## 配置使用
 
