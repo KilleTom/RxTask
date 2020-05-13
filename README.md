@@ -53,7 +53,7 @@ dependencies {
 ```kotlin
 
 //初始化Task全局的异步线程以及回调线程
-//这里利用Android 拓展线程库针对 android 设置全局线程的工作
+//例如这里利用Android 拓展线程库针对 android 设置全局线程的工作
 RxTaskSchedulerManager.setLocalScheduler(RxAndroidDefaultScheduler())
 
 ```
@@ -106,5 +106,86 @@ RxTaskSchedulerManager.setLocalScheduler(RxAndroidDefaultScheduler())
             it.printStackTrace()
       }.start()
 ```
+#### 带进度的异步运算
+- 使用全局线程的异步进度写法
+```kotlin
+ val progressTask = RxProgressEvaluationTaskTask
+            .createTask<JsonObject, Boolean> { task ->
 
+                val types = arrayListOf<String>("top", "shehui", "guonei")
+
+                types.forEach { value ->
+
+                    val result = okHttpClient
+                        .newCall(createRequest(createNewUrl(value)))
+                        .execute()
+
+                    val body = result.body ?: throw RuntimeException("body null")
+
+                    val jsonObject = Gson().fromJson(body.string(), JsonObject::class.java)
+
+                    Log.d("KilleTom", "推送新闻类型$value")
+                    //推送进度
+                    task.publishProgressAction(jsonObject)
+                }
+                //返回结果
+                return@createTask true
+            }.progressAction {
+                Log.i("KilleTom", "收到进度,message:$it")
+            }.successAction {
+                Log.i("KilleTom", "Done")
+            }.failAction {
+                Log.i("KilleTom", "error message:${it.message ?: "unknown"}")
+            }.start()
+```
+- 运行指定线程写法
+```kotlin
+ val progressTask = RxProgressEvaluationTaskTask
+            .createTask<JsonObject, Boolean> ({ task ->
+
+                val types = arrayListOf<String>("top", "shehui", "guonei")
+
+                types.forEach { value ->
+
+                    val result = okHttpClient
+                        .newCall(createRequest(createNewUrl(value)))
+                        .execute()
+
+                    val body = result.body ?: throw RuntimeException("body null")
+
+                    val jsonObject = Gson().fromJson(body.string(), JsonObject::class.java)
+
+                    Log.d("KilleTom", "推送新闻类型$value")
+                    //推送进度
+                    task.publishProgressAction(jsonObject)
+                }
+                //返回结果
+                return@createTask true
+            },
+            //例如这里指定默认实现好的 Android 拓展线程库
+            RxAndroidDefaultScheduler())
+            .progressAction {
+                Log.i("KilleTom", "收到进度,message:$it")
+            }.successAction {
+                Log.i("KilleTom", "Done")
+            }.failAction {
+                Log.i("KilleTom", "error message:${it.message ?: "unknown"}")
+            }.start()
+```
+#### 定时器异步
+```kotlin
+RxTimerTask.createTask { task ->
+
+            if (task.getTimeTicker().countTimes >= 10) {
+                task.cancel()
+            }
+            // do your logic
+            
+            return@createTask
+
+        }.setDelayTime(0L)
+            .setIntervalTime(1000)
+            .setTaskScheduler(Schedulers.computation())
+            .start()
+```
 
