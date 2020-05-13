@@ -4,7 +4,7 @@
 
 [可以通过该网站获取版本 https://jitpack.io/#KilleTom/rxtask](https://jitpack.io/#KilleTom/rxtask)
 
-注意`v0.0.1-beta`还没有抽离Scheduler 建议从`v1.0.0-beta`开始使用
+注意`v0.0.1-beta`还没有抽离Scheduler 建议从`v1.0.3-beta`开始使用
 
 ## 配置使用
 
@@ -22,15 +22,15 @@ allprojects {
 
 ### 基础库依赖添加
 
-当前库最新版本为  version:`v1.0.1-beta`
+当前库最新版本为  version:`v1.0.3-beta`
 
 ```gradle
 
 dependencies {
   //rxTask 基础库
-  implementation 'com.github.KilleTom:rxtask:lib_rxtask:version'
+  implementation 'com.github.KilleTom:rxtask:libRxtask:version'
   //android 扩展线程库
-  implementation 'com.github.KilleTom:rxtask:lib_rxtask_android_scheduler:version'
+  implementation 'com.github.KilleTom:rxtask:libRxtaskAndroidScheduler:version'
 }
 
 ```
@@ -39,10 +39,10 @@ PS: 不想找版本就这样子写
 ```gradle
 
 dependencies {
-  //rxTask 基础库
-  implementation 'com.github.KilleTom:rxtask:lib_rxtask:v1.0.1-beta'
-  //android 扩展线程库
-  implementation 'com.github.KilleTom:rxtask:lib_rxtask_android_scheduler:v1.0.1-beta'
+//    //rxTask 基础库
+    implementation 'com.github.KilleTom.rxtask:libRxtask:v1.0.3-beta'
+    //android 扩展线程库
+    implementation 'com.github.KilleTom.rxtask:libRxtaskAndroidScheduler:v1.0.3-beta'
 }
 
 ```
