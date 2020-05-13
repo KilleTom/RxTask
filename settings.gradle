@@ -1,4 +1,4 @@
 rootProject.name='RxTask'
 include ':app'
-include ':libRxtask'
-include ':libRxtaskAndroidScheduler'
+include 'libRxTask'
+include 'libRxTaskAndroidExpand'

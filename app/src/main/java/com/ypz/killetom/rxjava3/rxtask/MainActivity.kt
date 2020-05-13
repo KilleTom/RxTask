@@ -9,10 +9,11 @@ import android.os.Bundle
 import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.JsonObject
-import com.ypz.killetom.rxjava3.lib_rxtask.scheduler.RxTaskSchedulerManager
-import com.ypz.killetom.rxjava3.lib_rxtask.task.RxProgressEvaluationTaskTask
-import com.ypz.killetom.rxjava3.lib_rxtask.task.RxSingleEvaluationTaskTask
-import com.ypz.killetom.rxjava3.lib_rxtask.task.RxTimerTask
+import com.ypz.killetom.librxtask.scheduler.RxTaskSchedulerManager
+import com.ypz.killetom.librxtask.task.RxProgressEvaluationTaskTask
+import com.ypz.killetom.librxtask.task.RxSingleEvaluationTaskTask
+import com.ypz.killetom.librxtask.task.RxTimerTask
+import com.ypz.killetom.rxjava3.lib_rxtask_android.init.RxTaskAndroidDefaultInit
 import com.ypz.killetom.rxjava3.lib_rxtask_android.scheduler.RxAndroidDefaultScheduler
 import io.reactivex.rxjava3.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_main.*
@@ -32,10 +33,10 @@ class MainActivity : AppCompatActivity() {
             .writeTimeout(60000, TimeUnit.MILLISECONDS)
             .build()
 
-        RxTaskSchedulerManager.setLocalScheduler(RxAndroidDefaultScheduler())
-
+        RxTaskAndroidDefaultInit.instant.defaultInit()
+//
         RxSingleEvaluationTaskTask.createTask(
-            { rxSingleEvaluationTaskTask: RxSingleEvaluationTaskTask<*> ->  },
+            { rxSingleEvaluationTaskTask: RxSingleEvaluationTaskTask<*> -> },
             RxAndroidDefaultScheduler()
         )
         val singleTask = RxSingleEvaluationTaskTask.createTask {
@@ -49,7 +50,7 @@ class MainActivity : AppCompatActivity() {
 
             return@createTask result
         }
-
+//
         val progressTask = RxProgressEvaluationTaskTask
             .createTask<JsonObject, Boolean> { task ->
 
