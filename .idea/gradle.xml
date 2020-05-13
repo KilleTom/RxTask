@@ -11,8 +11,8 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
-            <option value="$PROJECT_DIR$/lib_rxtask" />
-            <option value="$PROJECT_DIR$/lib_rxtask_android_scheduler" />
+            <option value="$PROJECT_DIR$/libRxtask" />
+            <option value="$PROJECT_DIR$/libRxtaskAndroidScheduler" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />

@@ -34,6 +34,10 @@ class MainActivity : AppCompatActivity() {
 
         RxTaskSchedulerManager.setLocalScheduler(RxAndroidDefaultScheduler())
 
+        RxSingleEvaluationTaskTask.createTask(
+            { rxSingleEvaluationTaskTask: RxSingleEvaluationTaskTask<*> ->  },
+            RxAndroidDefaultScheduler()
+        )
         val singleTask = RxSingleEvaluationTaskTask.createTask {
 
             val response = okHttpClient.newCall(createRequest(createNewUrl("top")))

@@ -42,11 +42,17 @@ dependencies {
 
     implementation "com.squareup.okhttp3:okhttp:4.5.0"
 
-    implementation project(path: ':lib_rxtask')
+//    //rxTask 基础库
+//    implementation 'com.github.KilleTom:RxTask:lib_rxtask_android_scheduler:v1.0.1-beta'
+    //android 扩展线程库
+//    implementation 'com.github.KilleTom:RxTask:lib_rxtask_android_scheduler:v1.0.1-beta'
+
     implementation 'com.google.code.gson:gson:2.8.6'
     implementation 'com.squareup.retrofit2:retrofit:2.8.1'
 
     implementation "io.reactivex.rxjava3:rxjava:3.0.1"
     implementation 'io.reactivex.rxjava3:rxandroid:3.0.0'
-    implementation project(path: ':lib_rxtask_android_scheduler')
+
+    implementation project(path: ':libRxtask')
+    implementation project(path: ':libRxtaskAndroidScheduler')
 }
