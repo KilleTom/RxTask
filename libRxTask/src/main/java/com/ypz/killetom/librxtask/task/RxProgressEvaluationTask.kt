@@ -9,9 +9,9 @@ import io.reactivex.rxjava3.core.Maybe
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.subjects.PublishSubject
 
-class RxProgressEvaluationTaskTask<PROGRESS, RESULT>
+class RxProgressEvaluationTask<PROGRESS, RESULT>
 private constructor(
-    private val createRunnable: (RxProgressEvaluationTaskTask<PROGRESS, RESULT>) -> RESULT,
+    private val createRunnable: (RxProgressEvaluationTask<PROGRESS, RESULT>) -> RESULT,
     private val rxTaskScheduler: RxTaskScheduler) :
     ISuperEvaluationTask<RESULT>() {
 
@@ -123,7 +123,7 @@ private constructor(
 
     }
 
-    fun progressAction(action: (PROGRESS) -> Unit): RxProgressEvaluationTaskTask<PROGRESS, RESULT> {
+    fun progressAction(action: (PROGRESS) -> Unit): RxProgressEvaluationTask<PROGRESS, RESULT> {
 
         progressAction = action
 
@@ -140,18 +140,18 @@ private constructor(
     companion object {
 
         fun <PROGRESS, RESULT> createTask(
-            taskRunnable: (RxProgressEvaluationTaskTask<PROGRESS, RESULT>) -> RESULT
+            taskRunnable: (RxProgressEvaluationTask<PROGRESS, RESULT>) -> RESULT
         )
-                : RxProgressEvaluationTaskTask<PROGRESS, RESULT> {
-            return RxProgressEvaluationTaskTask(taskRunnable, RxTaskSchedulerManager.getLocalScheduler())
+                : RxProgressEvaluationTask<PROGRESS, RESULT> {
+            return RxProgressEvaluationTask(taskRunnable, RxTaskSchedulerManager.getLocalScheduler())
         }
 
         fun <PROGRESS, RESULT> createTask(
-            taskRunnable: (RxProgressEvaluationTaskTask<PROGRESS, RESULT>) -> RESULT,
+            taskRunnable: (RxProgressEvaluationTask<PROGRESS, RESULT>) -> RESULT,
             rxTaskScheduler: RxTaskScheduler = RxTaskSchedulerManager.getLocalScheduler()
         )
-                : RxProgressEvaluationTaskTask<PROGRESS, RESULT> {
-            return RxProgressEvaluationTaskTask(taskRunnable,rxTaskScheduler)
+                : RxProgressEvaluationTask<PROGRESS, RESULT> {
+            return RxProgressEvaluationTask(taskRunnable,rxTaskScheduler)
         }
     }
 }

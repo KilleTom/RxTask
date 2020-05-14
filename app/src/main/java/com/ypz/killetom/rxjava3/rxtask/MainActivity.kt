@@ -10,11 +10,9 @@ import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.ypz.killetom.librxtask.scheduler.RxTaskSchedulerManager
-import com.ypz.killetom.librxtask.task.RxProgressEvaluationTaskTask
-import com.ypz.killetom.librxtask.task.RxSingleEvaluationTaskTask
-import com.ypz.killetom.librxtask.task.RxTimerTask
+import com.ypz.killetom.librxtask.task.*
+import com.ypz.killetom.librxtask.task.RxSingleEvaluationTask.SingleEvluation
 import com.ypz.killetom.rxjava3.lib_rxtask_android.init.RxTaskAndroidDefaultInit
-import com.ypz.killetom.rxjava3.lib_rxtask_android.scheduler.RxAndroidDefaultScheduler
 import io.reactivex.rxjava3.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_main.*
 import okhttp3.*
@@ -35,11 +33,26 @@ class MainActivity : AppCompatActivity() {
 
         RxTaskAndroidDefaultInit.instant.defaultInit()
 //
-        RxSingleEvaluationTaskTask.createTask(
-            { rxSingleEvaluationTaskTask: RxSingleEvaluationTaskTask<*> -> },
-            RxAndroidDefaultScheduler()
-        )
-        val singleTask = RxSingleEvaluationTaskTask.createTask {
+        val task = object : SingleEvluation<JsonObject> {
+            override fun evluation(task: RxSingleEvaluationTask<*>): JsonObject {
+                return JsonObject()
+            }
+        }.getTask()
+
+        RxSingleEvaluationTask.singleBuilder().setTaskSchdeduler {
+            return@setTaskSchdeduler RxTaskSchedulerManager.getLocalScheduler()
+        }.builder {
+
+        }
+
+        val stringSingleTask = {task:RxSingleEvaluationTask<*>->
+            ""
+        }.createSingleTask()
+
+
+
+
+        val singleTask = RxSingleEvaluationTask.createTask {
 
             val response = okHttpClient.newCall(createRequest(createNewUrl("top")))
                 .execute()
@@ -51,7 +64,7 @@ class MainActivity : AppCompatActivity() {
             return@createTask result
         }
 //
-        val progressTask = RxProgressEvaluationTaskTask
+        val progressTask = RxProgressEvaluationTask
             .createTask<JsonObject, Boolean> { task ->
 
                 val types = arrayListOf<String>("top", "shehui", "guonei")
