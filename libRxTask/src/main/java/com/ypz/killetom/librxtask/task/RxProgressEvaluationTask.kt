@@ -79,7 +79,6 @@ private constructor(
                     //nothing to do by error
                 }
             )
-
     }
 
     override fun evaluationAction(): RESULT {

@@ -6,7 +6,7 @@ group = 'com.github.1986545332@qq.com'
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation "io.reactivex.rxjava3:rxjava:3.0.1"
+    compileOnly  "io.reactivex.rxjava3:rxjava:3.0.1"
 
 }
 
