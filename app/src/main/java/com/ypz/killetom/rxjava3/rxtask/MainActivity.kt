@@ -11,7 +11,7 @@ import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.ypz.killetom.librxtask.scheduler.RxTaskSchedulerManager
 import com.ypz.killetom.librxtask.task.*
-import com.ypz.killetom.librxtask.task.RxSingleEvaluationTask.SingleEvluation
+import com.ypz.killetom.librxtask.task.RxSingleEvaluationTask.SingleEvaluation
 import com.ypz.killetom.rxjava3.lib_rxtask_android.init.RxTaskAndroidDefaultInit
 import io.reactivex.rxjava3.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_main.*
@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity() {
 
         RxTaskAndroidDefaultInit.instant.defaultInit()
 //
-        val task = object : SingleEvluation<JsonObject> {
+        val task = object : SingleEvaluation<JsonObject> {
             override fun evluation(task: RxSingleEvaluationTask<*>): JsonObject {
                 return JsonObject()
             }
@@ -41,9 +41,7 @@ class MainActivity : AppCompatActivity() {
 
         RxSingleEvaluationTask.singleBuilder().setTaskSchdeduler {
             return@setTaskSchdeduler RxTaskSchedulerManager.getLocalScheduler()
-        }.builder {
-
-        }
+        }.builder{}
 
         val stringSingleTask = {task:RxSingleEvaluationTask<*>->
             ""

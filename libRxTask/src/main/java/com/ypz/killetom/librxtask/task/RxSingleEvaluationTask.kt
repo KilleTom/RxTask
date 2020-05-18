@@ -8,6 +8,18 @@ import com.ypz.killetom.librxtask.scheduler.RxTaskSchedulerManager
 import io.reactivex.rxjava3.core.Maybe
 import io.reactivex.rxjava3.disposables.Disposable
 
+/**
+ * @ProjectName: RxTask
+ * @Package: com.ypz.killetom.librxtask.task
+ * @ClassName: RxSingleEvaluationTask
+ * @Description: 关注结果运算的task
+ * @Author: KilleTom
+ * @CreateDate: 2020/5/8 17:30
+ * @UpdateUser: 更新者
+ * @UpdateDate: 2020/5/18 12:00
+ * @UpdateRemark: 创建
+ * @Version: 1.0
+ */
 class RxSingleEvaluationTask<RESULT>
 internal constructor(
     private val runnable: (RxSingleEvaluationTask<RESULT>) -> RESULT,
@@ -42,6 +54,7 @@ internal constructor(
         }
     }
 
+    //运算结果过程
     override fun evaluationAction(): RESULT {
 
         if (!running())
@@ -71,6 +84,7 @@ internal constructor(
         finalResetAction()
     }
 
+    //是否处于启动过程
     override fun running(): Boolean {
 
         val dis = disposable ?: return false
@@ -83,19 +97,21 @@ internal constructor(
     }
 
 
+    //最终重置动作
     override fun finalResetAction() {
 
         disposable?.dispose()
         disposable = null
-
     }
 
-    interface SingleEvluation<RESULT> {
+    //运算抽象接口
+    interface SingleEvaluation<RESULT> {
 
         fun evluation(task: RxSingleEvaluationTask<*>): RESULT
 
     }
 
+    //添加一个builder 模式便于DSL方式 构建调用
     class Builder internal constructor() {
 
         private var taskScheduler = RxTaskSchedulerManager.getLocalScheduler()
@@ -117,23 +133,14 @@ internal constructor(
 
     companion object {
 
-        fun <RESULT> createTask(
-            taskRunnable:
-                (RxSingleEvaluationTask<*>) -> RESULT
-        )
-                : RxSingleEvaluationTask<RESULT> {
-            return RxSingleEvaluationTask(
-                taskRunnable,
-                RxTaskSchedulerManager.getLocalScheduler()
-            )
+        fun <RESULT> createTask(taskRunnable: (RxSingleEvaluationTask<*>) -> RESULT): RxSingleEvaluationTask<RESULT> {
+            return RxSingleEvaluationTask(taskRunnable, RxTaskSchedulerManager.getLocalScheduler())
         }
 
         fun <RESULT> createTask(
-            taskRunnable:
-                (RxSingleEvaluationTask<*>) -> RESULT,
+            taskRunnable: (RxSingleEvaluationTask<*>) -> RESULT,
             rxTaskScheduler: RxTaskScheduler = RxTaskSchedulerManager.getLocalScheduler()
-        )
-                : RxSingleEvaluationTask<RESULT> {
+        ): RxSingleEvaluationTask<RESULT> {
             return RxSingleEvaluationTask(taskRunnable, rxTaskScheduler)
         }
 

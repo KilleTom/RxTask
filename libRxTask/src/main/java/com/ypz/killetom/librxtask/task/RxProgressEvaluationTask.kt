@@ -9,6 +9,18 @@ import io.reactivex.rxjava3.core.Maybe
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.subjects.PublishSubject
 
+/**
+ * @ProjectName: RxTask
+ * @Package: com.ypz.killetom.librxtask.task
+ * @ClassName: RxProgressEvaluationTask
+ * @Description: 带进度的task
+ * @Author: KilleTom
+ * @CreateDate: 2020/5/8 17:30
+ * @UpdateUser: 更新者
+ * @UpdateDate: 2020/5/18 12:00
+ * @UpdateRemark: 创建
+ * @Version: 1.0
+ */
 class RxProgressEvaluationTask<PROGRESS, RESULT>
 private constructor(
     private val createRunnable: (RxProgressEvaluationTask<PROGRESS, RESULT>) -> RESULT,
@@ -81,6 +93,7 @@ private constructor(
             )
     }
 
+    //计算结果
     override fun evaluationAction(): RESULT {
 
         if (!running())
@@ -94,6 +107,7 @@ private constructor(
         return result
     }
 
+    //判断是否运行
     override fun running(): Boolean {
 
         val dis = resultDisposable ?: return false
@@ -112,6 +126,7 @@ private constructor(
         finalResetAction()
     }
 
+    //最终操作后的重置
     override fun finalResetAction() {
 
         resultDisposable?.dispose()
@@ -122,6 +137,7 @@ private constructor(
 
     }
 
+    //进度推送回调
     fun progressAction(action: (PROGRESS) -> Unit): RxProgressEvaluationTask<PROGRESS, RESULT> {
 
         progressAction = action
@@ -129,6 +145,7 @@ private constructor(
         return this
     }
 
+    //内部通知需要进行进度推送
     fun publishProgressAction(progress: PROGRESS) {
 
         if (running())

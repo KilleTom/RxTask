@@ -2,6 +2,18 @@ package com.ypz.killetom.librxtask.base
 
 import com.ypz.killetom.librxtask.exception.RxTaskCancelException
 
+/**
+ * @ProjectName: RxTask
+ * @Package: com.ypz.killetom.librxtask.base
+ * @ClassName: ISuperEvaluationTask
+ * @Description: 负责运算结果Task的抽象基类
+ * @Author: KilleTom
+ * @CreateDate: 2020/4/27 11:00
+ * @UpdateUser: 更新者
+ * @UpdateDate: 2020/5/18 12:00
+ * @UpdateRemark: 创建
+ * @Version: 1.0
+ */
 abstract class ISuperEvaluationTask<RESULT> : IEvaluation<RESULT>, ISuperTask<RESULT>() {
 
     override fun start() {

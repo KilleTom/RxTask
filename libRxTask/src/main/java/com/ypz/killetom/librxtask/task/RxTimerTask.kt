@@ -7,6 +7,18 @@ import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.schedulers.Schedulers
 import java.util.concurrent.TimeUnit
 
+/**
+ * @ProjectName: RxTask
+ * @Package: com.ypz.killetom.librxtask.task
+ * @ClassName: RxTimerTask
+ * @Description: 关注定时器的task
+ * @Author: KilleTom
+ * @CreateDate: 2020/5/8 17:30
+ * @UpdateUser: 更新者
+ * @UpdateDate: 2020/5/18 12:00
+ * @UpdateRemark: 创建
+ * @Version: 1.0
+ */
 open class RxTimerTask
 private constructor(private val timerAction: (RxTimerTask) -> Unit) : ISuperTask<Long>() {
 
@@ -77,6 +89,7 @@ private constructor(private val timerAction: (RxTimerTask) -> Unit) : ISuperTask
         return false
     }
 
+    //取消并且不重置
     fun justCancelUnreset() {
 
         super.cancel()
@@ -85,6 +98,7 @@ private constructor(private val timerAction: (RxTimerTask) -> Unit) : ISuperTask
         timerDisposable = null
     }
 
+    //创建一个定时器运行的记录器便于记录简易的信息
     protected open fun createTicker(): TimerTicker {
         return TimerTicker()
     }
@@ -93,6 +107,7 @@ private constructor(private val timerAction: (RxTimerTask) -> Unit) : ISuperTask
         return ticker
     }
 
+    //定时器开始运行前的延迟时间
     fun setDelayTime(time: Long): RxTimerTask {
 
         if (!running()) {
@@ -102,6 +117,7 @@ private constructor(private val timerAction: (RxTimerTask) -> Unit) : ISuperTask
         return this
     }
 
+    //定时器每个时间事件运行的时间间隔设置
     fun setIntervalTime(time: Long): RxTimerTask {
 
         if (!running()) {
@@ -111,6 +127,7 @@ private constructor(private val timerAction: (RxTimerTask) -> Unit) : ISuperTask
         return this
     }
 
+    //设置时间单位
     fun setTimeUnit(unit: TimeUnit): RxTimerTask {
 
         if (!running()) {
@@ -120,6 +137,7 @@ private constructor(private val timerAction: (RxTimerTask) -> Unit) : ISuperTask
         return this
     }
 
+    //设置工作线程
     fun setTaskScheduler(scheduler: Scheduler): RxTimerTask {
 
         if (!running()) {

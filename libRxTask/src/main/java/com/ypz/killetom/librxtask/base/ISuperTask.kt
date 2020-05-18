@@ -3,7 +3,18 @@ package com.ypz.killetom.librxtask.base
 import com.ypz.killetom.librxtask.exception.RxTaskCancelException
 import com.ypz.killetom.librxtask.exception.RxTaskRunningException
 
-
+/**
+ * @ProjectName: RxTask
+ * @Package: com.ypz.killetom.librxtask.base
+ * @ClassName: ISuperTask
+ * @Description: Task 基类
+ * @Author: KilleTom
+ * @CreateDate: 2020/5/18 12:00
+ * @UpdateUser: 更新者
+ * @UpdateDate: 2020/5/18 12:00
+ * @UpdateRemark: 创建
+ * @Version: 1.0
+ */
 abstract class ISuperTask<RESULT> : ITask<RESULT> {
 
     protected var TASK_CURRENT_STATUS = NORMAL_STATUS
@@ -25,7 +36,7 @@ abstract class ISuperTask<RESULT> : ITask<RESULT> {
 
     }
 
-    protected open fun finalResetAction(){
+    protected open fun finalResetAction() {
 
     }
 
@@ -38,17 +49,13 @@ abstract class ISuperTask<RESULT> : ITask<RESULT> {
 
             TASK_CURRENT_STATUS = STOP_STATUS
 
-            throw RxTaskRunningException(
-                "task was stop"
-            )
+            throw RxTaskRunningException("task was stop")
         }
     }
 
     @Throws
     fun throwCancelError() {
-        throw RxTaskCancelException(
-            "TASK Cancel"
-        )
+        throw RxTaskCancelException("TASK Cancel")
     }
 
     companion object {
@@ -68,6 +75,6 @@ abstract class ISuperTask<RESULT> : ITask<RESULT> {
 
     protected fun logD(message: String) {
 
-        RxTaskLogManager.instants.logD(this,message)
+        RxTaskLogManager.instants.logD(this, message)
     }
 }
