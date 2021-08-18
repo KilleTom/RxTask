@@ -88,9 +88,9 @@ sometime you don't want asynchronous run on default schedule you can make this a
 
 #### asynchronous operation to be easy use
 
-- like this android example use a init gloable defalut scheduler
+- use gloable defalut scheduler
 ```kotlin
-//简单的异步运算
+//simple asynchronous operation
  val singleTask = RxSingleEvaluationTaskTask.createTask {
 
             //get news
@@ -110,12 +110,12 @@ sometime you don't want asynchronous run on default schedule you can make this a
             it.printStackTrace()
       }.start()
 ```
-- like this  android example not use a init gloable defalut scheduler
+- run on designated schedule
+
 ```kotlin
-//简单的异步运算
+
  val singleTask = RxSingleEvaluationTaskTask.createTask({
 
-            //例如获取新闻
             val response = okHttpClient.newCall(createRequest(createNewUrl("top")))
                 .execute()
 
@@ -125,19 +125,21 @@ sometime you don't want asynchronous run on default schedule you can make this a
 
             return@createTask result
         },
-        //like this use a other scheduler 
+        // like this use a  designated schedule for RxAndroidDefaultScheduler
         RxAndroidDefaultScheduler()
         ).successAction {
-            //成功回调
+         
             Log.i("KilleTom", "$it")
         }.failAction {
-            //失败回调
+            
             it.printStackTrace()
       }.start()
 ```
 
 #### asynchronous operation can be has progress call
-- 使用全局线程的异步进度写法
+
+- like this android example use a init gloable defalut scheduler
+
 ```kotlin
  val progressTask = RxProgressEvaluationTaskTask
             .createTask<JsonObject, Boolean> { task ->
@@ -155,20 +157,28 @@ sometime you don't want asynchronous run on default schedule you can make this a
                     val jsonObject = Gson().fromJson(body.string(), JsonObject::class.java)
 
                     Log.d("KilleTom", "推送新闻类型$value")
-                    //推送进度
+                    
+                    //pulish progress
                     task.publishProgressAction(jsonObject)
+                    
                 }
-                //返回结果
+                //asynchronous result
                 return@createTask true
+                
             }.progressAction {
+                //do on progress call logic
                 Log.i("KilleTom", "收到进度,message:$it")
             }.successAction {
+                // do sucess logic
                 Log.i("KilleTom", "Done")
             }.failAction {
+                // do fail logic
                 Log.i("KilleTom", "error message:${it.message ?: "unknown"}")
             }.start()
 ```
-- 运行指定线程写法
+
+- run on designated schedule
+
 ```kotlin
  val progressTask = RxProgressEvaluationTaskTask
             .createTask<JsonObject, Boolean> ({ task ->
@@ -186,13 +196,13 @@ sometime you don't want asynchronous run on default schedule you can make this a
                     val jsonObject = Gson().fromJson(body.string(), JsonObject::class.java)
 
                     Log.d("KilleTom", "推送新闻类型$value")
-                    //推送进度
+                    
                     task.publishProgressAction(jsonObject)
                 }
-                //返回结果
+                
                 return@createTask true
             },
-            //例如这里指定默认实现好的 Android 拓展线程库
+            // like this use a  designated schedule for RxAndroidDefaultScheduler
             RxAndroidDefaultScheduler())
             .progressAction {
                 Log.i("KilleTom", "收到进度,message:$it")
@@ -202,7 +212,7 @@ sometime you don't want asynchronous run on default schedule you can make this a
                 Log.i("KilleTom", "error message:${it.message ?: "unknown"}")
             }.start()
 ```
-#### 定时器异步
+#### asynchronous operation can be timer
 ```kotlin
 RxTimerTask.createTask { task ->
 
