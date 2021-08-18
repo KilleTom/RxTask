@@ -22,7 +22,7 @@ allprojects {
 
 ### 基础库依赖添加
 
-当前库最新版本为  version:`v1.0.3-beta`
+当前库最新版本为  version:`v1.1.0`
 
 ```gradle
 
@@ -40,9 +40,9 @@ PS: 不想找版本就这样子写
 
 dependencies {
 //    //rxTask 基础库
-    implementation 'com.github.KilleTom.rxtask:libRxtask:v1.0.3-beta'
+    implementation 'com.github.KilleTom.rxtask:libRxtask:v1.1.0'
     //android 扩展线程库
-    implementation 'com.github.KilleTom.rxtask:libRxtaskAndroidScheduler:v1.0.3-beta'
+    implementation 'com.github.KilleTom.rxtask:libRxtaskAndroidScheduler:v1.1.0'
 }
 
 ```
