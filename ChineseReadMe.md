@@ -1,20 +1,14 @@
 # RxTask
 
-a easy Asynchronous Library by RxJava3.X 
+利用RxJava 3.X 封装的Task 简化异步操作
 
-[get lib version by use this web link： https://jitpack.io/#KilleTom/rxtask](https://jitpack.io/#KilleTom/rxtask)
+[可以通过该网站获取版本 https://jitpack.io/#KilleTom/rxtask](https://jitpack.io/#KilleTom/rxtask)
 
-be careful `v0.0.1-beta` defalut scheduler was android 
+注意`v0.0.1-beta`还没有抽离Scheduler 建议从`v1.0.3-beta`开始使用
 
-but start from `v1.0.3-beta` version you can use other scheduler
+## 配置使用
 
-and now `v1.1.0` was first release version.
-
-## TobeUse
-
-### Step 1.in you project build.gradle(Project:XXXX) file, make repositories maven `https://jitpack.io`
-
-look like this
+### Step 1.先在 build.gradle(Project:XXXX) 的 repositories 添加:
 
 ```gradle
 
@@ -26,74 +20,52 @@ allprojects {
 
 ```
 
-### dependencies lib
+### 基础库依赖添加
 
-now lib  version was： `v1.1.0`
-
-`libRxtask` a base lib, use this can run on webService or other
-
-`libRxtaskAndroidScheduler` a expand android  lib 
-
-
-not run on android just like this dependdencies
+当前库最新版本为  version:`v1.1.0`
 
 ```gradle
 
 dependencies {
-  //rxTask baselib
+  //rxTask 基础库
   implementation 'com.github.KilleTom:rxtask:libRxtask:version'
+  //android 扩展线程库
+  implementation 'com.github.KilleTom:rxtask:libRxtaskAndroidScheduler:version'
 }
 
 ```
-
-run on android must write this:
-
-```gradle
-
-dependencies {
-  //rxTask baselib
-  implementation 'com.github.KilleTom:rxtask:libRxtask:version'
-  //android expand scheduler lib
-  implementation 'com.github.KilleTom:rxtask:libRxTaskAndroidExpand:version'
-}
-
-```
-if you don't want find lib version just write like this
-
+PS: 不想找版本就这样子写
 
 ```gradle
 
 dependencies {
-   //rxTask base lib 
+//    //rxTask 基础库
     implementation 'com.github.KilleTom.rxtask:libRxtask:v1.1.0'
-    
-   
-    //run on android must use : android expand  lib 
-    implementation 'com.github.KilleTom.rxtask:libRxTaskAndroidExpand:v1.1.0'
+    //android 扩展线程库
+    implementation 'com.github.KilleTom.rxtask:libRxtaskAndroidScheduler:v1.1.0'
 }
 
 ```
 
-### use lib way：
+### 使用方式：
 
-#### init gloabl defalut scheduler
+#### 初始化全局线程
 ```kotlin
 
-// init RxTask gloabl defalut scheduler
-//for example like android use this lib init gloable defalut scheduler
+//初始化Task全局的异步线程以及回调线程
+//例如这里利用Android 拓展线程库针对 android 设置全局线程的工作
 RxTaskSchedulerManager.setLocalScheduler(RxAndroidDefaultScheduler())
 
 ```
-sometime you don't want asynchronous run on default schedule you can make this asynchronous run on other schedule
 
-#### asynchronous operation to be easy use
+#### 简单异步运算
 
-- use gloable defalut scheduler
+- 直接使用全局线程去做简单的异步运算
 ```kotlin
-//simple asynchronous operation
+//简单的异步运算
  val singleTask = RxSingleEvaluationTaskTask.createTask {
 
-            //get news
+            //例如获取新闻
             val response = okHttpClient.newCall(createRequest(createNewUrl("top")))
                 .execute()
 
@@ -103,19 +75,19 @@ sometime you don't want asynchronous run on default schedule you can make this a
 
             return@createTask result
         }.successAction {
-            //do your sucess logic
+            //成功回调
             Log.i("KilleTom", "$it")
         }.failAction {
-            //do your fail logic
+            //失败回调
             it.printStackTrace()
       }.start()
 ```
-- run on designated schedule
-
+- 指定线程去做简单的异步运算
 ```kotlin
-
+//简单的异步运算
  val singleTask = RxSingleEvaluationTaskTask.createTask({
 
+            //例如获取新闻
             val response = okHttpClient.newCall(createRequest(createNewUrl("top")))
                 .execute()
 
@@ -125,21 +97,17 @@ sometime you don't want asynchronous run on default schedule you can make this a
 
             return@createTask result
         },
-        // like this use a  designated schedule for RxAndroidDefaultScheduler
-        RxAndroidDefaultScheduler()
-        ).successAction {
-         
+        //例如这里指定默认实现好的 Android 拓展线程库
+        RxAndroidDefaultScheduler()).successAction {
+            //成功回调
             Log.i("KilleTom", "$it")
         }.failAction {
-            
+            //失败回调
             it.printStackTrace()
       }.start()
 ```
-
-#### asynchronous operation can be has progress call
-
-- like this android example use a init gloable defalut scheduler
-
+#### 带进度的异步运算
+- 使用全局线程的异步进度写法
 ```kotlin
  val progressTask = RxProgressEvaluationTaskTask
             .createTask<JsonObject, Boolean> { task ->
@@ -157,28 +125,20 @@ sometime you don't want asynchronous run on default schedule you can make this a
                     val jsonObject = Gson().fromJson(body.string(), JsonObject::class.java)
 
                     Log.d("KilleTom", "推送新闻类型$value")
-                    
-                    //pulish progress
+                    //推送进度
                     task.publishProgressAction(jsonObject)
-                    
                 }
-                //asynchronous result
+                //返回结果
                 return@createTask true
-                
             }.progressAction {
-                //do on progress call logic
                 Log.i("KilleTom", "收到进度,message:$it")
             }.successAction {
-                // do sucess logic
                 Log.i("KilleTom", "Done")
             }.failAction {
-                // do fail logic
                 Log.i("KilleTom", "error message:${it.message ?: "unknown"}")
             }.start()
 ```
-
-- run on designated schedule
-
+- 运行指定线程写法
 ```kotlin
  val progressTask = RxProgressEvaluationTaskTask
             .createTask<JsonObject, Boolean> ({ task ->
@@ -196,13 +156,13 @@ sometime you don't want asynchronous run on default schedule you can make this a
                     val jsonObject = Gson().fromJson(body.string(), JsonObject::class.java)
 
                     Log.d("KilleTom", "推送新闻类型$value")
-                    
+                    //推送进度
                     task.publishProgressAction(jsonObject)
                 }
-                
+                //返回结果
                 return@createTask true
             },
-            // like this use a  designated schedule for RxAndroidDefaultScheduler
+            //例如这里指定默认实现好的 Android 拓展线程库
             RxAndroidDefaultScheduler())
             .progressAction {
                 Log.i("KilleTom", "收到进度,message:$it")
@@ -212,7 +172,7 @@ sometime you don't want asynchronous run on default schedule you can make this a
                 Log.i("KilleTom", "error message:${it.message ?: "unknown"}")
             }.start()
 ```
-#### asynchronous operation can be timer
+#### 定时器异步
 ```kotlin
 RxTimerTask.createTask { task ->
 
@@ -228,4 +188,5 @@ RxTimerTask.createTask { task ->
             .setTaskScheduler(Schedulers.computation())
             .start()
 ```
+
 
