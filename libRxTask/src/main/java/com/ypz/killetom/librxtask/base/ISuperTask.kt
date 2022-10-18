@@ -2,6 +2,8 @@ package com.ypz.killetom.librxtask.base
 
 import com.ypz.killetom.librxtask.exception.RxTaskCancelException
 import com.ypz.killetom.librxtask.exception.RxTaskRunningException
+import com.ypz.killetom.librxtask.scope.ITaskScope
+import com.ypz.killetom.librxtask.scope.ITaskScopeCallAction
 
 /**
  * @ProjectName: RxTask
@@ -18,6 +20,14 @@ import com.ypz.killetom.librxtask.exception.RxTaskRunningException
 abstract class ISuperTask<RESULT> : ITask<RESULT> {
 
     protected var TASK_CURRENT_STATUS = NORMAL_STATUS
+
+    protected var taskScope: ITaskScope? = null
+
+    protected var iTaskScopeCallAction: ITaskScopeCallAction = object : ITaskScopeCallAction {
+        override fun doOnScopeDestroyAction() {
+            cancel()
+        }
+    }
 
     override fun start() {
 
@@ -56,6 +66,13 @@ abstract class ISuperTask<RESULT> : ITask<RESULT> {
     @Throws
     fun throwCancelError() {
         throw RxTaskCancelException("TASK Cancel")
+    }
+
+    override fun bindScope(scope: ITaskScope?): ITask<RESULT>? {
+
+        scope?.subScope(iTaskScopeCallAction)
+
+        return this
     }
 
     companion object {

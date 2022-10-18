@@ -13,12 +13,15 @@ import com.ypz.killetom.librxtask.scheduler.RxTaskSchedulerManager
 import com.ypz.killetom.librxtask.task.*
 import com.ypz.killetom.librxtask.task.RxSingleEvaluationTask.SingleEvaluation
 import com.ypz.killetom.rxjava3.lib_rxtask_android.init.RxTaskAndroidDefaultInit
+import com.ypz.killetom.rxjava3.lib_rxtask_android.scope.RxTaskAndroidBasePageScope
 import io.reactivex.rxjava3.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_main.*
 import okhttp3.*
 import java.util.concurrent.TimeUnit
 
 class MainActivity : AppCompatActivity() {
+
+    val scope = RxTaskAndroidBasePageScope()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,12 +35,13 @@ class MainActivity : AppCompatActivity() {
             .build()
 
         RxTaskAndroidDefaultInit.instant.defaultInit()
+        lifecycle.addObserver(scope)
 //
         val task = object : SingleEvaluation<JsonObject> {
             override fun evluation(task: RxSingleEvaluationTask<*>): JsonObject {
                 return JsonObject()
             }
-        }.getTask()
+        }.getTask().bindScope(scope).start()
 
         RxSingleEvaluationTask.singleBuilder().setTaskSchdeduler {
             return@setTaskSchdeduler RxTaskSchedulerManager.getLocalScheduler()

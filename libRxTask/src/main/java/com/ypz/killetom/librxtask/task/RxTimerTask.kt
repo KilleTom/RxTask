@@ -1,6 +1,7 @@
 package com.ypz.killetom.librxtask.task
 
 import com.ypz.killetom.librxtask.base.ISuperTask
+import com.ypz.killetom.librxtask.scope.ITaskScope
 import io.reactivex.rxjava3.core.Flowable
 import io.reactivex.rxjava3.core.Scheduler
 import io.reactivex.rxjava3.disposables.Disposable
@@ -35,6 +36,12 @@ private constructor(private val timerAction: (RxTimerTask) -> Unit) : ISuperTask
     protected val ticker = createTicker()
 
     private var errorAction: ((Throwable) -> Unit)? = null
+
+    override fun bindScope(scope: ITaskScope?): RxTimerTask {
+        super.bindScope(scope)
+        return this
+    }
+
 
     override fun start() {
 

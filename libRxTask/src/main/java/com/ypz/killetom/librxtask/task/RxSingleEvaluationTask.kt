@@ -1,10 +1,12 @@
 package com.ypz.killetom.librxtask.task
 
 import com.ypz.killetom.librxtask.base.ISuperEvaluationTask
+import com.ypz.killetom.librxtask.base.ITask
 import com.ypz.killetom.librxtask.base.RxTaskScheduler
 import com.ypz.killetom.librxtask.exception.RxTaskCancelException
 import com.ypz.killetom.librxtask.exception.RxTaskRunningException
 import com.ypz.killetom.librxtask.scheduler.RxTaskSchedulerManager
+import com.ypz.killetom.librxtask.scope.ITaskScope
 import io.reactivex.rxjava3.core.Maybe
 import io.reactivex.rxjava3.disposables.Disposable
 
@@ -29,6 +31,10 @@ internal constructor(
     private val resultTask: Maybe<RESULT>
     private var disposable: Disposable? = null
 
+    override fun bindScope(scope: ITaskScope?): RxSingleEvaluationTask<RESULT> {
+         super.bindScope(scope)
+        return this
+    }
 
     init {
         resultTask = Maybe.create<RESULT> { emitter ->
@@ -95,7 +101,6 @@ internal constructor(
 
         return false
     }
-
 
     //最终重置动作
     override fun finalResetAction() {

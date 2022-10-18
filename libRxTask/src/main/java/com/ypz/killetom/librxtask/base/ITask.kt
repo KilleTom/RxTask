@@ -1,5 +1,7 @@
 package com.ypz.killetom.librxtask.base
 
+import com.ypz.killetom.librxtask.scope.ITaskScope
+
 /**
  * @ProjectName: RxTask
  * @Package: com.ypz.killetom.librxtask.base
@@ -19,5 +21,7 @@ interface ITask<RESULT> {
 
     //取消
     fun cancel()
+
+    fun bindScope(scope: ITaskScope?): ITask<RESULT>?
 
 }

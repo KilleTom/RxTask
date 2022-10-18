@@ -5,6 +5,7 @@ import com.ypz.killetom.librxtask.base.RxTaskScheduler
 import com.ypz.killetom.librxtask.exception.RxTaskCancelException
 import com.ypz.killetom.librxtask.exception.RxTaskRunningException
 import com.ypz.killetom.librxtask.scheduler.RxTaskSchedulerManager
+import com.ypz.killetom.librxtask.scope.ITaskScope
 import io.reactivex.rxjava3.core.Maybe
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.subjects.PublishSubject
@@ -34,6 +35,11 @@ private constructor(
     private var progressDisposable: Disposable? = null
 
     private var progressAction: ((PROGRESS) -> Unit)? = null
+
+    override fun bindScope(scope: ITaskScope?): RxProgressEvaluationTask<PROGRESS, RESULT> {
+        super.bindScope(scope)
+        return this
+    }
 
     init {
         resultTask = Maybe.create<RESULT> { emitter ->
