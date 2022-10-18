@@ -32,7 +32,7 @@ now lib  version was： `v1.1.0`
 
 `libRxtask` a base lib, use this can run on webService or other
 
-`libRxtaskAndroidScheduler` a expand android scheduler lib 
+`libRxtaskAndroidScheduler` a expand android  lib 
 
 
 not run on android just like this dependdencies
@@ -54,7 +54,7 @@ dependencies {
   //rxTask baselib
   implementation 'com.github.KilleTom:rxtask:libRxtask:version'
   //android expand scheduler lib
-  implementation 'com.github.KilleTom:rxtask:libRxtaskAndroidScheduler:version'
+  implementation 'com.github.KilleTom:rxtask:libRxTaskAndroidExpand:version'
 }
 
 ```
@@ -68,8 +68,8 @@ dependencies {
     implementation 'com.github.KilleTom.rxtask:libRxtask:v1.1.0'
     
    
-    //run on android must use : android expand scheduler lib 
-    implementation 'com.github.KilleTom.rxtask:libRxtaskAndroidScheduler:v1.1.0'
+    //run on android must use : android expand  lib 
+    implementation 'com.github.KilleTom.rxtask:libRxTaskAndroidExpand:v1.1.0'
 }
 
 ```
